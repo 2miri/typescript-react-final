@@ -27,7 +27,7 @@ export default function Kakao() {
       });
 
       setUserData({
-        _id: user._id,
+        id: user._id,
         kakaoId: user.kakaoId,
         profileImage: user.profileImage,
         nickname: user.nickname,
@@ -39,9 +39,23 @@ export default function Kakao() {
     }
   };
 
+  const fetchAndSaveUser = async () => {
+    setError("");
+    try {
+      if (accessToken) sessionStorage.setItem("access_token", accessToken);
+      const { data } = await axiosInstance.get("/auth/me");
+      setUserData(data);
+      navigate("/");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "unknown error");
+    }
+  };
+
   useEffect(() => {
     if (emailYn === "N") {
       setShowForm(true);
+    } else {
+      fetchAndSaveUser();
     }
   }, [emailYn]);
 

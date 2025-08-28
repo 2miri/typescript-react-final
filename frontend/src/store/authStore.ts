@@ -3,7 +3,7 @@ import { devtools } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 
 interface User {
-  _id: string;
+  id: string;
   kakaoId: string;
   nickname: string;
   profileImage: string;
