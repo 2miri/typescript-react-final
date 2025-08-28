@@ -1,6 +1,54 @@
 import { Mail, Lock, Eye, User } from "lucide-react";
+import { useActionState, useState } from "react";
+import { axiosInstance } from "../../api/axios";
+import { useNavigate } from "react-router";
 
 export default function Signup() {
+  const navigate = useNavigate();
+  const [isShowPassword, setIsShowPassword] = useState(false);
+  const [state, formAction, isPending] = useActionState(
+    async (_: { error: string; payload: FormData }, formData: FormData) => {
+      try {
+        const email = (formData.get("email") as string) || "";
+        const nickname = (formData.get("nickname") as string) || "";
+        const password = (formData.get("password") as string) || "";
+        const confirmPassword =
+          (formData.get("confirmPassword") as string) || "";
+
+        // 간단하게 입력 양식 검사
+        if (email.trim() === "")
+          return { error: "Email is required", payload: formData };
+        if (nickname.trim() === "")
+          return { error: "Nickname is required", payload: formData };
+        if (password.trim().length < 6)
+          return {
+            error: "Password must be at least 6 characters long",
+            payload: formData,
+          };
+        if (password !== confirmPassword)
+          return { error: "Passwords do not match", payload: formData };
+
+        const { status } = await axiosInstance.post("/auth/signup", {
+          email,
+          nickname,
+          password,
+        });
+
+        if (status === 201) {
+          alert("회원가입에 성공했습니다.");
+          navigate("/auth/email-login");
+        }
+
+        return { error: "Signup failed", payload: formData };
+      } catch (e) {
+        return {
+          error: e instanceof Error ? e.message : "unknown error",
+          payload: formData,
+        };
+      }
+    },
+    { error: "", payload: new FormData() }
+  );
   return (
     <div className="min-h-[calc(100vh-64px)] flex items-center justify-center px-4">
       <div className="w-full max-w-md">
@@ -13,13 +61,13 @@ export default function Signup() {
           </div>
 
           {/* 에러 메시지 예시 */}
-          <div className="mb-4 p-3 bg-red-500/10 border border-red-500/50 rounded-lg">
-            <p className="text-red-500 text-sm">
-              Password must be at least 6 characters long
-            </p>
-          </div>
+          {state.error && (
+            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/50 rounded-lg">
+              <p className="text-red-500 text-sm">{state.error}</p>
+            </div>
+          )}
 
-          <form className="space-y-4">
+          <form action={formAction} className="space-y-4">
             {/* 이메일 입력 */}
             <div>
               <label
@@ -33,8 +81,12 @@ export default function Signup() {
                 <input
                   type="email"
                   id="email"
+                  name="email"
                   className="w-full bg-slate-700 text-white pl-10 pr-4 py-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   placeholder="Enter your email"
+                  defaultValue={
+                    state.error && String(state.payload?.get("email"))
+                  }
                 />
               </div>
             </div>
@@ -52,8 +104,12 @@ export default function Signup() {
                 <input
                   type="text"
                   id="nickname"
+                  name="nickname"
                   className="w-full bg-slate-700 text-white pl-10 pr-4 py-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   placeholder="Choose a nickname"
+                  defaultValue={
+                    state.error && String(state.payload?.get("nickname"))
+                  }
                 />
               </div>
             </div>
@@ -69,14 +125,19 @@ export default function Signup() {
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <input
-                  type="password"
+                  type={isShowPassword ? "text" : "password"}
                   id="password"
+                  name="password"
                   className="w-full bg-slate-700 text-white pl-10 pr-12 py-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   placeholder="Create a password"
+                  defaultValue={
+                    state.error && String(state.payload?.get("password"))
+                  }
                 />
                 <button
                   type="button"
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                  onClick={() => setIsShowPassword((show) => !show)}
                 >
                   <Eye className="h-5 w-5" />
                 </button>
@@ -96,8 +157,12 @@ export default function Signup() {
                 <input
                   type="password"
                   id="confirmPassword"
+                  name="confirmPassword"
                   className="w-full bg-slate-700 text-white pl-10 pr-12 py-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   placeholder="Confirm your password"
+                  defaultValue={
+                    state.error && String(state.payload?.get("confirmPassword"))
+                  }
                 />
               </div>
             </div>
@@ -112,7 +177,8 @@ export default function Signup() {
               </button>
               <button
                 type="submit"
-                className="flex-1 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                className="flex-1 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:gb-gray-400"
+                disabled={isPending}
               >
                 Create Account
               </button>
