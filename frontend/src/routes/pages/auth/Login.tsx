@@ -1,6 +1,9 @@
 import { Mail } from "lucide-react";
 
 export default function Login() {
+  const handleKakaoLogin = () => {
+    window.location.href = "http://localhost:4000/auth/kakao";
+  };
   return (
     <div className="min-h-[calc(100vh-64px)] flex items-center justify-center px-4">
       <div className="w-full max-w-md">
@@ -33,7 +36,10 @@ export default function Login() {
             </div>
 
             {/* 카카오 로그인 버튼 */}
-            <button className="w-full flex items-center justify-center gap-2 bg-[#FEE500] text-[#000000] py-3 rounded-lg hover:bg-[#FDD800] transition-colors font-medium">
+            <button
+              className="w-full flex items-center justify-center gap-2 bg-[#FEE500] text-[#000000] py-3 rounded-lg hover:bg-[#FDD800] transition-colors font-medium"
+              onClick={handleKakaoLogin}
+            >
               <img
                 src="https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_small.png"
                 alt="Kakao Logo"
