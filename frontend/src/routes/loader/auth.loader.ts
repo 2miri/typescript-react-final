@@ -1,3 +1,4 @@
+import { redirect } from "react-router";
 import { useAuthStore } from "../../store/authStore";
 import { axiosInstance } from "../api/axios";
 
@@ -12,5 +13,19 @@ export const fetchUserData = async () => {
     }
   } catch (e) {
     console.error(e);
+  }
+};
+
+export const requireAuth = () => {
+  const token = sessionStorage.getItem("access_token");
+  if (!token) {
+    return redirect("/auth/login");
+  }
+};
+
+export const redirectIfAuth = () => {
+  const token = sessionStorage.getItem("access_token");
+  if (token) {
+    return redirect("/");
   }
 };

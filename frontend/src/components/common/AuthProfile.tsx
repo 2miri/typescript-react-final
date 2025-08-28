@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { LogOut } from "lucide-react";
 import { useAuthStore } from "../../store/authStore";
+import { useRevalidator } from "react-router";
 
 export default function AuthProfile() {
+  const { revalidate } = useRevalidator();
   const user = useAuthStore((state) => state.user);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const logout = useAuthStore((state) => state.logout);
@@ -28,9 +30,10 @@ export default function AuthProfile() {
               </p>
             </div>
             <button
-              onClick={() => {
-                logout();
+              onClick={async () => {
+                await logout();
                 setIsUserMenuOpen(false);
+                revalidate();
               }}
               className="flex items-center w-full px-4 py-2 text-sm  hover:bg-gray-100 dark:hover:bg-slate-700"
             >
