@@ -1,6 +1,53 @@
 import { Mail, Lock, Eye } from "lucide-react";
+import { useState } from "react";
+import { useNavigate } from "react-router";
+import { axiosInstance } from "../../api/axios";
+import { useAuthStore } from "../../../store/authStore";
 
 export default function EmailLogin() {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isShowPassword, setIsShowPassword] = useState(false);
+  const setUserData = useAuthStore((state) => state.setUserData);
+
+  const handleLogin = async () => {
+    setError("");
+    try {
+      if (email.trim() === "") {
+        setError("이메일을 입력해주세요");
+        return;
+      }
+
+      if (password.trim().length < 6) {
+        setError("비밀번호는 6자 이상이어야 합니다.");
+        return;
+      }
+
+      const {
+        data: { accessToken, user },
+      } = await axiosInstance.post("/auth/login", {
+        email,
+        password,
+      });
+
+      const userData = {
+        id: user._id,
+        kakaoId: user.kakaoId,
+        nickname: user.nickname,
+        profileImage: user.profileImage,
+        email: user.email,
+      };
+
+      sessionStorage.setItem("access_token", accessToken);
+      setUserData(userData);
+      navigate("/");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "unknown error");
+    }
+  };
+
   return (
     <div className="min-h-[calc(100vh-64px)] flex items-center justify-center px-4">
       <div className="w-full max-w-md">
@@ -16,13 +63,13 @@ export default function EmailLogin() {
           </div>
 
           {/* 에러 */}
-          <div className="mb-4 p-3 bg-red-500/10 border border-red-500/50 rounded-lg">
-            <p className="text-red-500 text-sm">
-              Password must be at least 6 characters long
-            </p>
-          </div>
+          {error && (
+            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/50 rounded-lg">
+              <p className="text-red-500 text-sm">{error}</p>
+            </div>
+          )}
 
-          <form className="space-y-4">
+          <form action={handleLogin} className="space-y-4">
             {/* 이메일 입력 */}
             <div>
               <label
@@ -39,6 +86,8 @@ export default function EmailLogin() {
                   className="w-full bg-slate-700 text-white pl-10 pr-4 py-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   placeholder="Enter your email"
                   required
+                  onChange={(e) => setEmail(e.target.value)}
+                  defaultValue={email}
                 />
               </div>
             </div>
@@ -54,15 +103,18 @@ export default function EmailLogin() {
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <input
-                  type="password"
+                  type={isShowPassword ? "text" : "password"}
                   id="password"
                   className="w-full bg-slate-700 text-white pl-10 pr-12 py-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   placeholder="Enter your password"
                   required
+                  onChange={(e) => setPassword(e.target.value)}
+                  defaultValue={password}
                 />
                 <button
                   type="button"
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                  onClick={() => setIsShowPassword((show) => !show)}
                 >
                   <Eye className="h-5 w-5" />
                 </button>
@@ -74,6 +126,7 @@ export default function EmailLogin() {
               <button
                 type="button"
                 className="flex-1 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                onClick={() => navigate(-1)}
               >
                 Back
               </button>

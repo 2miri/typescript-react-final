@@ -21,7 +21,10 @@ export default function Login() {
 
           <div className="space-y-4">
             {/* 이메일 로그인 버튼 */}
-            <button className="w-full flex items-center justify-center gap-2 bg-white text-slate-900 py-3 rounded-lg hover:bg-gray-100 transition-colors font-medium">
+            <button
+              className="w-full flex items-center justify-center gap-2 bg-white text-slate-900 py-3 rounded-lg hover:bg-gray-100 transition-colors font-medium"
+              onClick={() => navigate("/auth/email-login")}
+            >
               <Mail className="w-5 h-5" />
               Continue with Email
             </button>
