@@ -1,13 +1,13 @@
 import { Mail } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import Redirection from "../../../../components/common/Redirection";
 import { axiosInstance } from "../../../api/axios";
-import { authStore } from "../../../../store/authStore";
+import { useAuthStore } from "../../../../store/authStore";
 
 export default function Kakao() {
   const navigate = useNavigate();
-  const setUserData = authStore((state) => state.setUserData);
+  const setUserData = useAuthStore((state) => state.setUserData);
   const [searchParam] = useSearchParams();
   const accessToken = searchParam.get("access_token");
   const emailYn = searchParam.get("email");
@@ -39,7 +39,7 @@ export default function Kakao() {
     }
   };
 
-  const fetchAndSaveUser = async () => {
+  const fetchAndSaveUser = useCallback(async () => {
     setError("");
     try {
       if (accessToken) sessionStorage.setItem("access_token", accessToken);
@@ -49,7 +49,7 @@ export default function Kakao() {
     } catch (e) {
       setError(e instanceof Error ? e.message : "unknown error");
     }
-  };
+  }, [accessToken, navigate, setUserData]);
 
   useEffect(() => {
     if (emailYn === "N") {
@@ -57,7 +57,7 @@ export default function Kakao() {
     } else {
       fetchAndSaveUser();
     }
-  }, [emailYn]);
+  }, [emailYn, fetchAndSaveUser]);
 
   return (
     <>

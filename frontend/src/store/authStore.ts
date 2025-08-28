@@ -16,7 +16,7 @@ interface AuthStore {
   setUserData: (userData: User) => void;
 }
 
-export const authStore = create<AuthStore>()(
+export const useAuthStore = create<AuthStore>()(
   devtools(
     immer((set) => ({
       isLogin: false,
