@@ -2,8 +2,10 @@ import { useState } from "react";
 import { Search, PenSquare, LogIn } from "lucide-react";
 import { Link } from "react-router";
 import AuthProfile from "./AuthProfile";
+import { useAuthStore } from "../../store/authStore";
 
 export default function Header() {
+  const isLogin = useAuthStore((state) => state.isLogin);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   return (
@@ -38,14 +40,17 @@ export default function Header() {
           >
             <PenSquare className="h-4 w-4" />
           </Link>
-          <Link
-            to="/auth/login"
-            className="p-1.5 bg-slate-800 rounded-full hover:bg-slate-700 transition-colors"
-          >
-            <LogIn className="h-4 w-4" />
-          </Link>
+          {!isLogin && (
+            <Link
+              to="/auth/login"
+              className="p-1.5 bg-slate-800 rounded-full hover:bg-slate-700 transition-colors"
+            >
+              <LogIn className="h-4 w-4" />
+            </Link>
+          )}
+
           {/* 로그인 되면 아래 컴포넌트 보여주기 */}
-          <AuthProfile />
+          {isLogin && <AuthProfile />}
         </div>
       </div>
     </header>
