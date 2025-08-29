@@ -1,4 +1,6 @@
 import { ImagePlus } from "lucide-react";
+import { useState } from "react";
+import { useNavigate } from "react-router";
 
 const categories = [
   "Technology",
@@ -9,11 +11,46 @@ const categories = [
   "Sports",
 ];
 export default function PostCreate() {
+  const navigate = useNavigate();
+  const [formState, setFormState] = useState({
+    title: "",
+    category: "",
+    thumbnail: "",
+    content: "",
+  });
+
+  const [errorState, setErrorState] = useState({
+    title: "",
+    category: "",
+    thumbnail: "",
+    content: "",
+  });
+
+  const handleChangeFormState = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
+    setFormState((formState) => ({
+      ...formState,
+      [e.target.name]: e.target.value,
+    }));
+
+    setErrorState((state) => ({
+      ...state,
+      [e.target.name]: "",
+    }));
+  };
+
+  const handleFormAction = async () => {
+    console.log(formState);
+  };
+
   return (
     <div className="max-w-4xl mx-auto px-4 md:px-8 py-8">
       <h1 className="text-3xl font-bold text-white mb-8">Write New Post</h1>
 
-      <form className="space-y-6">
+      <form action={handleFormAction} className="space-y-6">
         <div>
           <label
             htmlFor="title"
@@ -24,9 +61,12 @@ export default function PostCreate() {
           <input
             type="text"
             id="title"
+            name="title"
             className="w-full bg-slate-800 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none"
             placeholder="Enter post title"
             required
+            value={formState.title}
+            onChange={handleChangeFormState}
           />
         </div>
 
@@ -39,8 +79,11 @@ export default function PostCreate() {
           </label>
           <select
             id="category"
+            name="category"
             className="w-full bg-slate-800 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none"
             required
+            value={formState.category}
+            onChange={handleChangeFormState}
           >
             {categories.map((category) => (
               <option key={category} value={category}>
@@ -102,9 +145,12 @@ export default function PostCreate() {
           </label>
           <textarea
             id="content"
+            name="content"
             className="w-full h-96 bg-slate-800 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none"
             placeholder="Write your post content here..."
             required
+            value={formState.content}
+            onChange={handleChangeFormState}
           />
         </div>
 
@@ -118,6 +164,7 @@ export default function PostCreate() {
           <button
             type="button"
             className="px-6 py-2.5 bg-slate-700 text-white font-medium rounded-lg hover:bg-slate-600 transition-colors"
+            onClick={() => navigate(-1)}
           >
             Cancel
           </button>
