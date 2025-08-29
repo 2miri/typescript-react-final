@@ -1,8 +1,9 @@
 import { ImagePlus } from "lucide-react";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useNavigate } from "react-router";
 
 const categories = [
+  "",
   "Technology",
   "Lifestyle",
   "Travel",
@@ -11,18 +12,25 @@ const categories = [
   "Sports",
 ];
 
+type FormStateType = {
+  title: string;
+  category: string;
+  thumbnail: string;
+  content: string;
+};
+
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 export default function PostCreate() {
   const navigate = useNavigate();
-  const [formState, setFormState] = useState({
+  const [formState, setFormState] = useState<FormStateType>({
     title: "",
     category: "",
     thumbnail: "",
     content: "",
   });
 
-  const [errorState, setErrorState] = useState({
+  const [errorState, setErrorState] = useState<FormStateType>({
     title: "",
     category: "",
     thumbnail: "",
@@ -30,6 +38,7 @@ export default function PostCreate() {
   });
 
   const [previewImage, setPreviewImage] = useState("");
+  const [isPending, startTransition] = useTransition();
 
   const handleChangeFormState = (
     e: React.ChangeEvent<
@@ -68,6 +77,7 @@ export default function PostCreate() {
 
     const reader = new FileReader();
     reader.onload = () => {
+      setErrorState((error) => ({ ...error, thumbnail: "" }));
       setPreviewImage(reader.result as string);
     };
     reader.readAsDataURL(selectedFile);
@@ -75,6 +85,25 @@ export default function PostCreate() {
 
   const handleFormAction = async () => {
     console.log(formState);
+    startTransition(async () => {
+      try {
+        // 폼 유효성 검사
+        const newErors: FormStateType = {} as FormStateType;
+        if (!formState.title.trim()) newErors.title = "Please enter a title";
+        if (!formState.category.trim())
+          newErors.category = "Please select a category";
+        if (!previewImage) newErors.thumbnail = "Please upload a thumbnail";
+        if (!formState.content.trim())
+          newErors.content = "Please enter a content";
+
+        if (Object.keys(newErors).length > 0) {
+          setErrorState(newErors);
+          return;
+        }
+      } catch (e) {
+        console.error(e instanceof Error ? e.message : "unknwon error");
+      }
+    });
   };
 
   return (
@@ -95,10 +124,12 @@ export default function PostCreate() {
             name="title"
             className="w-full bg-slate-800 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none"
             placeholder="Enter post title"
-            required
             value={formState.title}
             onChange={handleChangeFormState}
           />
+          {errorState?.title && (
+            <p className="text-rose-500 mt-1">{errorState.title}</p>
+          )}
         </div>
 
         <div>
@@ -112,16 +143,18 @@ export default function PostCreate() {
             id="category"
             name="category"
             className="w-full bg-slate-800 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            required
             value={formState.category}
             onChange={handleChangeFormState}
           >
             {categories.map((category) => (
               <option key={category} value={category}>
-                {category}
+                {category === "" ? "Select a Category" : category}
               </option>
             ))}
           </select>
+          {errorState?.category && (
+            <p className="text-rose-500 mt-1">{errorState.category}</p>
+          )}
         </div>
 
         <div>
@@ -165,6 +198,9 @@ export default function PostCreate() {
                 </label>
               </div>
             )}
+            {errorState?.thumbnail && (
+              <p className="text-rose-500 mt-1">{errorState.thumbnail}</p>
+            )}
           </div>
         </div>
 
@@ -180,10 +216,12 @@ export default function PostCreate() {
             name="content"
             className="w-full h-96 bg-slate-800 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none"
             placeholder="Write your post content here..."
-            required
             value={formState.content}
             onChange={handleChangeFormState}
           />
+          {errorState?.content && (
+            <p className="text-rose-500 mt-1">{errorState.content}</p>
+          )}
         </div>
 
         <div className="flex gap-4">
