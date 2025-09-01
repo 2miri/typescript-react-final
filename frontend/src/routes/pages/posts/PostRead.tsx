@@ -4,11 +4,15 @@ import AdBanner from "../../../components/common/AdBanner";
 import PostGrid from "../../../components/post/PostGrid";
 import CommentForm from "../../../components/comment/CommentForm";
 import CommentComponent from "../../../components/comment/CommentComponent";
-import { useLoaderData } from "react-router";
+import { useLoaderData, useNavigate } from "react-router";
+import { format } from "date-fns";
+import { useAuthStore } from "../../../store/authStore";
 
 export default function PostRead() {
+  const navigate = useNavigate();
   const { post, relatedPosts }: { post: Post; relatedPosts: Post[] } =
     useLoaderData();
+  const user = useAuthStore((state) => state.user);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   // 게시글이 없으면
   if (!post) {
@@ -27,111 +31,65 @@ export default function PostRead() {
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-start mb-6">
           <span className="inline-block bg-blue-500 text-white text-sm font-semibold px-3 py-1 rounded-md">
-            Technology
+            {post.category}
           </span>
-          <div className="flex gap-2">
-            <button className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
-              <Pencil className="w-4 h-4" />
-              Edit
-            </button>
-            <button className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
-              <Trash2 className="w-4 h-4" />
-              Delete
-            </button>
-          </div>
+          {post.author._id === user?.id && (
+            <div className="flex gap-2">
+              <button
+                className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                onClick={() => navigate(`/edit/${post._id}`)}
+              >
+                <Pencil className="w-4 h-4" />
+                Edit
+              </button>
+              <button
+                className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                onClick={() => setShowDeleteConfirm(true)}
+              >
+                <Trash2 className="w-4 h-4" />
+                Delete
+              </button>
+            </div>
+          )}
         </div>
 
         <h1 className="text-2xl lg:text-3xl font-bold text-white mb-6">
-          The Impact of Technology on the Workplace: How Technology Is Changing
+          {post.title}
         </h1>
 
         <div className="flex items-center gap-6 mb-8">
           <div className="flex items-center">
             <img
-              src={
-                "https://gravatar.com/avatar/42b0d0e8377b33f970e9eeded0cb5a61?d=identicon"
-              }
-              alt={"Jason Francisco"}
+              src={post.author.profileImage}
+              alt={post.author.nickname}
               className="w-10 h-10 rounded-full mr-3"
             />
             <div>
-              <p className="text-white font-medium">{"Jason Francisco"}</p>
+              <p className="text-white font-medium">{post.author.nickname}</p>
               <div className="flex items-center text-sm text-gray-400">
                 <CalendarDays className="h-4 w-4 mr-1" />
-                <span>{"2023-03-15"}</span>
+                <span>
+                  {format(new Date(post.createdAt), "yyyy-MM-dd HH:mm")}
+                </span>
               </div>
             </div>
           </div>
           <div className="flex items-center text-sm text-gray-400">
             <Eye className="h-4 w-4 mr-1" />
-            <span>3</span>
+            <span>{post.viewCount}</span>
           </div>
         </div>
 
         <div className="mb-8">
           <img
-            src={
-              "https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-            }
-            alt={"Post Image"}
+            src={post.thumbnail}
+            alt={post.title}
             className="w-full h-[400px] object-cover rounded-lg"
           />
         </div>
 
-        <div className="prose prose-invert prose-lg max-w-none mb-12 text-white text-lg">
-          <p>
-            The way we work is constantly evolving, and technology is playing an
-            increasingly important role in shaping the modern workplace. From
-            remote work capabilities to artificial intelligence and automation,
-            technological advancements are transforming how we collaborate,
-            communicate, and complete tasks.
-          </p>
-
-          <h2>Remote Work Revolution</h2>
-          <p>
-            One of the most significant changes in recent years has been the
-            shift towards remote work. Cloud computing, video conferencing
-            tools, and project management software have made it possible for
-            teams to collaborate effectively from anywhere in the world. This
-            transformation has led to increased flexibility, reduced commuting
-            time, and improved work-life balance for many employees.
-          </p>
-
-          <h2>Artificial Intelligence and Automation</h2>
-          <p>
-            AI and automation are streamlining workflows and handling repetitive
-            tasks, allowing workers to focus on more strategic and creative
-            aspects of their jobs. From chatbots handling customer service
-            inquiries to machine learning algorithms analyzing data patterns,
-            these technologies are becoming integral to many business
-            operations.
-          </p>
-
-          <h2>Digital Communication and Collaboration</h2>
-          <p>
-            Modern workplace communication has evolved beyond email to include
-            instant messaging, virtual meetings, and collaborative document
-            editing. These tools have made it easier for teams to stay connected
-            and work together in real-time, regardless of their physical
-            location.
-          </p>
-
-          <h2>Cybersecurity Challenges</h2>
-          <p>
-            As technology becomes more prevalent in the workplace, cybersecurity
-            has become a critical concern. Organizations must invest in robust
-            security measures to protect sensitive data and maintain privacy in
-            an increasingly digital environment.
-          </p>
-
-          <h2>The Future of Work</h2>
-          <p>
-            Looking ahead, emerging technologies like virtual reality, augmented
-            reality, and the metaverse may further transform how we work and
-            interact with colleagues. These innovations promise to create more
-            immersive and engaging work experiences while continuing to break
-            down geographical barriers.
-          </p>
+        <div className="prose prose-invert prose-lg max-w-none mb-12 text-white text-lg whitespace-pre-wrap">
+          {post.content}
         </div>
 
         {/* Delete Confirmation Modal */}
