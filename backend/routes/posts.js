@@ -16,62 +16,70 @@ const { faker } = require("@faker-js/faker");
 // [GET] /posts?sort=newest|views&category=...&limit=...&skip=...&page=...&perPage=...
 router.get("/", async (req, res) => {
   try {
-    let { sort, category, limit, skip, page, perPage } = req.query;
+    // 1) 쿼리 파싱 (search 추가)
+    let { sort, category, search, page, perPage = 12, limit, skip } = req.query;
 
-    // 1) 필터
+    // 2) 필터
     const filter = {};
     if (category) {
       filter.category = category;
     }
+    if (search) {
+      // title 또는 content에 search 문자열이 포함된 문서 검색
+      filter.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { content: { $regex: search, $options: "i" } },
+      ];
+    }
 
-    // 2) 정렬
+    // 3) 정렬
     const sortOption = {};
-    if (sort === "newest") {
-      sortOption.createdAt = -1;
-    } else if (sort === "views") {
-      sortOption.viewCount = -1;
-    }
+    if (sort === "newest") sortOption.createdAt = -1;
+    else if (sort === "views") sortOption.viewCount = -1;
 
-    // 3) 페이징 계산
-    let lim = null;
-    let skp = null;
-
-    if (page != null && perPage != null) {
-      // page는 1부터 시작
-      const p = parseInt(page, 10);
-      const pp = parseInt(perPage, 10);
-      if (!isNaN(p) && !isNaN(pp) && p > 0 && pp > 0) {
-        lim = pp;
-        skp = (p - 1) * pp;
-      }
+    // 4) 페이지네이션 파싱
+    let p = parseInt(page, 10);
+    let pp = parseInt(perPage, 10);
+    let lim, skp;
+    if (!isNaN(p) && !isNaN(pp) && p > 0 && pp > 0) {
+      lim = pp;
+      skp = (p - 1) * pp;
     } else {
-      // 기존 limit/skip 옵션
-      if (limit != null) {
-        lim = parseInt(limit, 10);
-      }
-      if (skip != null) {
-        skp = parseInt(skip, 10);
-      }
+      if (limit != null) lim = parseInt(limit, 10);
+      if (skip != null) skp = parseInt(skip, 10);
     }
 
-    // 4) 쿼리 빌드
-    let query = Post.find(filter)
+    // 5) 전체 카운트 및 최대 페이지 계산
+    let totalCount = null;
+    let maxPage = null;
+    if (lim != null && skp != null && !isNaN(p) && !isNaN(pp)) {
+      totalCount = await Post.countDocuments(filter);
+      maxPage = Math.ceil(totalCount / pp);
+    }
+
+    // 6) 실제 조회 쿼리
+    const query = Post.find(filter)
       .populate("author", "nickname profileImage")
       .populate("comments.author", "nickname profileImage")
       .lean();
 
-    if (Object.keys(sortOption).length) {
-      query = query.sort(sortOption);
-    }
-    if (lim != null && !isNaN(lim)) {
-      query = query.limit(lim);
-    }
-    if (skp != null && !isNaN(skp)) {
-      query = query.skip(skp);
-    }
+    if (Object.keys(sortOption).length) query.sort(sortOption);
+    if (lim != null) query.limit(lim);
+    if (skp != null) query.skip(skp);
 
     const posts = await query;
-    res.json(posts);
+
+    // 7) 응답
+    const response = { posts };
+    if (totalCount != null) {
+      response.pagination = {
+        totalCount,
+        currentPage: p,
+        perPage: pp,
+        maxPage,
+      };
+    }
+    res.json(response);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });

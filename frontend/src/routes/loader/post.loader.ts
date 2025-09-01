@@ -14,9 +14,9 @@ export const fetchOverview = async () => {
 export const fetchPostsDetail = async ({ params }: LoaderFunctionArgs) => {
   try {
     const { data } = await axiosInstance.get(`/posts/${params.id}`);
-    const { data: relatedPosts } = await axiosInstance.get(
-      `/posts?category=${data.category}&limit=3`
-    );
+    const {
+      data: { posts: relatedPosts },
+    } = await axiosInstance.get(`/posts?category=${data.category}&limit=3`);
     return { post: data, relatedPosts };
   } catch {
     return { post: null, relatedPosts: null };
