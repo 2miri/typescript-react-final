@@ -1,13 +1,19 @@
 import { useState } from "react";
 import { Search, PenSquare, LogIn } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import AuthProfile from "./AuthProfile";
 import { useAuthStore } from "../../store/authStore";
 
 export default function Header() {
+  const navigate = useNavigate();
   const isLogin = useAuthStore((state) => state.isLogin);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-
+  const [searchParams] = useSearchParams();
+  const search = searchParams.get("search") || "";
+  const [keyword, setKeyword] = useState(search);
+  const handleSearch = async () => {
+    navigate(`/posts?search=${keyword}`);
+  };
   return (
     <header className="bg-slate-900 text-white py-5 px-4 md:px-8">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -28,6 +34,13 @@ export default function Header() {
                   ? "w-40 md:w-60 opacity-100"
                   : "w-0 opacity-0 md:w-40 md:opacity-100"
               }`}
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSearch();
+                }
+              }}
             />
             <Search
               className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 cursor-pointer"
