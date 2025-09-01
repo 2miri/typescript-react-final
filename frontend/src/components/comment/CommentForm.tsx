@@ -1,21 +1,43 @@
 import { Send } from "lucide-react";
-import { useState } from "react";
+import { Dispatch, SetStateAction, startTransition, useState } from "react";
 import { useAuthStore } from "../../store/authStore";
 import { useNavigate, useParams } from "react-router";
 import { axiosInstance } from "../../routes/api/axios";
 
-export default function CommentForm() {
+export default function CommentForm({
+  addOptimisticComments,
+  setComments,
+}: {
+  addOptimisticComments: (action: Comment) => void;
+  setComments: Dispatch<SetStateAction<Comment[]>>;
+}) {
   const params = useParams();
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
   const [text, setText] = useState("");
   const handleCommendAdd = async () => {
+    addOptimisticComments({
+      author: {
+        _id: Date.now().toString(),
+        profileImage: user?.profileImage,
+        nickname: user?.nickname,
+      },
+      content: text,
+      _id: Date.now().toString(),
+      createdAt: new Date().toISOString(),
+    } as Comment);
     try {
       if (!text.trim()) return;
-      await axiosInstance.post(`/posts/${params.id}/comments`, {
-        content: text,
-      });
+      const { data } = await axiosInstance.post(
+        `/posts/${params.id}/comments`,
+        {
+          content: text,
+        }
+      );
       setText("");
+      startTransition(() => {
+        setComments((comments) => [...comments, data]);
+      });
     } catch (e) {
       alert(e instanceof Error ? e.message : "unknown error");
     }
