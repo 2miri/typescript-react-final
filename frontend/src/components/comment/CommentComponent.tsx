@@ -1,13 +1,17 @@
 import { format } from "date-fns";
 import { Trash } from "lucide-react";
+import { useAuthStore } from "../../store/authStore";
 
 export default function CommentComponent({
   _id,
   author,
   content,
   createdAt,
-}: Comment) {
-  const handleCommentDelete = async () => {};
+  deleteComment,
+}: Comment & {
+  deleteComment: (id: string) => void;
+}) {
+  const user = useAuthStore((state) => state.user);
   return (
     <div className="mb-6">
       <div className="flex gap-4">
@@ -26,15 +30,17 @@ export default function CommentComponent({
             </div>
             <p className="text-gray-300">{content}</p>
           </div>
-          <div className="flex items-center gap-4 mt-2">
-            <button
-              className="flex items-center gap-1 text-sm text-gray-400 hover:text-blue-400 transition-colors"
-              onClick={handleCommentDelete}
-            >
-              <Trash className="w-4 h-4" aria-hidden="true" />
-              삭제
-            </button>
-          </div>
+          {author._id === user?.id && (
+            <div className="flex items-center gap-4 mt-2">
+              <button
+                className="flex items-center gap-1 text-sm text-gray-400 hover:text-blue-400 transition-colors"
+                onClick={() => deleteComment(_id)}
+              >
+                <Trash className="w-4 h-4" aria-hidden="true" />
+                삭제
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

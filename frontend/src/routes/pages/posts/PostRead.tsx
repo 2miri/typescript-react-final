@@ -30,6 +30,17 @@ export default function PostRead() {
     }
   };
 
+  const deleteComment = async (commentId: string) => {
+    try {
+      await axiosInstance.delete(`/posts/${post._id}/comments/${commentId}`);
+      setComments((comments) =>
+        comments.filter((comment) => comment._id !== commentId)
+      );
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "unknewn error");
+    }
+  };
+
   // 게시글이 없으면
   if (!post) {
     return (
@@ -147,7 +158,11 @@ export default function PostRead() {
           <div className="mt-8 space-y-6">
             {optimisticComments &&
               optimisticComments.map((comment) => (
-                <CommentComponent key={comment._id} {...comment} />
+                <CommentComponent
+                  key={comment._id}
+                  deleteComment={deleteComment}
+                  {...comment}
+                />
               ))}
           </div>
         </div>
