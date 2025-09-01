@@ -7,7 +7,7 @@ export default function PostGrid({
   posts,
 }: {
   title: string;
-  posts: unknown[];
+  posts: Post[];
 }) {
   if (posts.length === 0) return <PostMainZero title={title} />;
   return (
@@ -15,15 +15,15 @@ export default function PostGrid({
       <div className="flex items-center justify-between mb-8">
         <h2 className="text-2xl font-bold text-white">{title}</h2>
         <Link
-          to="/"
+          to="/posts"
           className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
         >
           View All Post
         </Link>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {Array.from({ length: 6 }, (_, i) => `Post ${i}`).map((_, index) => (
-          <PostCard key={index} />
+        {posts.map((post) => (
+          <PostCard key={post._id} {...post} />
         ))}
       </div>
     </section>
