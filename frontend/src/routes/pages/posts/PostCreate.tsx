@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ImagePlus, Loader2 } from "lucide-react";
-import { useEffect, useState, useTransition } from "react";
+import React, { useEffect, useState, useTransition } from "react";
 import { useLoaderData, useNavigate } from "react-router";
 import { axiosInstance } from "../../api/axios";
 
@@ -86,8 +86,8 @@ export default function PostCreate() {
     reader.readAsDataURL(selectedFile);
   };
 
-  const handleFormAction = async () => {
-    console.log(formState);
+  const handleFormAction = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     startTransition(async () => {
       try {
         // 폼 유효성 검사
@@ -170,7 +170,7 @@ export default function PostCreate() {
         Write {post ? "Modify" : "New"} Post
       </h1>
 
-      <form action={handleFormAction} className="space-y-6">
+      <form onSubmit={handleFormAction} className="space-y-6">
         <div>
           <label
             htmlFor="title"
