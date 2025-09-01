@@ -5,9 +5,11 @@ import PostMainZero from "./PostMainZero";
 export default function PostGrid({
   title = "Posts",
   posts = [],
+  viewAllPosts = "/posts",
 }: {
   title?: string;
   posts?: Post[];
+  viewAllPosts?: string;
 }) {
   if (posts.length === 0) return <PostMainZero title={title} />;
   return (
@@ -15,7 +17,7 @@ export default function PostGrid({
       <div className="flex items-center justify-between mb-8">
         <h2 className="text-2xl font-bold text-white">{title}</h2>
         <Link
-          to="/posts"
+          to={viewAllPosts}
           className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
         >
           View All Post

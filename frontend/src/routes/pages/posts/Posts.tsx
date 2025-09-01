@@ -3,12 +3,21 @@ import PostCard from "../../../components/post/PostCard";
 import AdBanner from "../../../components/common/AdBanner";
 import Pagination from "./Pagination";
 import { useState } from "react";
-import { useLoaderData } from "react-router";
+import { useLoaderData, useSearchParams } from "react-router";
 
 export default function Posts() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [page, setPage] = useState(1);
-  const { posts, pagination }: { posts: Post[]; paginagtion: Pagination } =
+  const { posts, pagination }: { posts: Post[]; pagination: Pagination } =
     useLoaderData();
+
+  const sort = searchParams.get("sort") || "newest";
+  const handleSortChange = (sort: string) => {
+    const next = new URLSearchParams(searchParams);
+    next.set("sort", sort);
+    setSearchParams(next);
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
       {/* Header: Title + Filter */}
@@ -32,13 +41,27 @@ export default function Posts() {
           </div>
           <div className="flex bg-gray-100 dark:bg-slate-800 rounded-lg">
             <button
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors bg-blue-500 text-white`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors 
+                ${
+                  sort === "newest"
+                    ? " bg-blue-500 text-white"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700"
+                }
+                  `}
+              onClick={() => handleSortChange("newest")}
             >
               <Clock className="w-4 h-4" />
               Latest
             </button>
             <button
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors 
+                ${
+                  sort === "views"
+                    ? " bg-blue-500 text-white"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700"
+                }
+                `}
+              onClick={() => handleSortChange("views")}
             >
               <TrendingUp className="w-4 h-4" />
               Popular

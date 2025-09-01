@@ -18,13 +18,21 @@ export default function Home() {
         <AdBanner />
       </div>
 
-      <PostGrid title="Latest Post" posts={latestPosts} />
+      <PostGrid
+        title="Latest Post"
+        posts={latestPosts}
+        viewAllPosts={"/posts"}
+      />
 
       <div className="mt-8">
         <AdBanner />
       </div>
 
-      <PostGrid title="Popular Post" posts={popularPosts} />
+      <PostGrid
+        title="Popular Post"
+        posts={popularPosts}
+        viewAllPosts={"/posts?sort=views"}
+      />
     </div>
   );
 }
