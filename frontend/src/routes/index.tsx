@@ -16,7 +16,11 @@ import {
 } from "./loader/auth.loader";
 import FullLoading from "../components/common/FullLoading";
 import ErrorState from "../components/common/ErrorState";
-import { fetchOverview, fetchPostsDetail } from "./loader/post.loader";
+import {
+  fetchOverview,
+  fetchPostsDetail,
+  petchPostModify,
+} from "./loader/post.loader";
 
 const router = createBrowserRouter([
   {
@@ -41,7 +45,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/edit/:id",
-        loader: requireAuth,
+        loader: petchPostModify,
         Component: PostCreate,
       },
       {

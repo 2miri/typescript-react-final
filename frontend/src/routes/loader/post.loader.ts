@@ -1,5 +1,6 @@
 import { LoaderFunctionArgs } from "react-router";
 import { axiosInstance } from "../api/axios";
+import { requireAuth } from "./auth.loader";
 
 export const fetchOverview = async () => {
   try {
@@ -20,5 +21,16 @@ export const fetchPostsDetail = async ({ params }: LoaderFunctionArgs) => {
   } catch {
     return { post: null, relatedPosts: null };
     // console.error(e);
+  }
+};
+
+export const petchPostModify = async ({ params }: LoaderFunctionArgs) => {
+  try {
+    const auth = requireAuth();
+    if (auth) return auth;
+    const { data } = await axiosInstance.get(`/posts/${params.id}`);
+    return data;
+  } catch (e) {
+    console.error(e);
   }
 };
