@@ -4,6 +4,13 @@ interface Author {
   nickname: string;
 }
 
+interface Comment {
+  author: Author;
+  content: string;
+  _id: string;
+  createdAt: string;
+}
+
 interface Post {
   _id: string;
   title: string;
@@ -11,7 +18,7 @@ interface Post {
   thumbnail: string;
   content: string;
   author: Author;
-  comments: [];
+  comments: Comment[];
   viewCount: number;
   createdAt: string;
 }
