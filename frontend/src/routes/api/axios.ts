@@ -16,3 +16,25 @@ axiosInstance.interceptors.request.use(
   },
   (error) => Promise.reject(error)
 );
+
+let retry = false;
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    if (error.response && error.response.status === 401 && !retry) {
+      retry = true;
+      try {
+        const res = await axiosInstance.post("/auth/refresh");
+        if (!res.data.accessToken) throw new Error("Access token is missing");
+        retry = false;
+        sessionStorage.setItem("access_token", res.data.accessToken);
+        return axiosInstance(originalRequest);
+      } catch (e) {
+        sessionStorage.removeItem("access_token");
+        await axiosInstance.post("/auth/logout");
+        return Promise.reject(e);
+      }
+    }
+  }
+);
