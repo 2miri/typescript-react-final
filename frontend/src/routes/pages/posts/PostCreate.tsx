@@ -301,8 +301,9 @@ export default function PostCreate() {
           </button>
           <button
             type="button"
-            className="px-6 py-2.5 bg-slate-700 text-white font-medium rounded-lg hover:bg-slate-600 transition-colors"
+            className="px-6 py-2.5 bg-slate-700 text-white font-medium rounded-lg hover:bg-slate-600 transition-colors disabled:bg-gray-400"
             onClick={() => navigate(-1)}
+            disabled={isPending}
           >
             Cancel
           </button>
