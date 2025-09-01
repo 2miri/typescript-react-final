@@ -1,8 +1,11 @@
 import { Clock, Filter, TrendingUp } from "lucide-react";
 import PostCard from "../../../components/post/PostCard";
 import AdBanner from "../../../components/common/AdBanner";
+import Pagination from "./Pagination";
+import { useState } from "react";
 
 export default function Posts() {
+  const [page, setPage] = useState(1);
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
       {/* Header: Title + Filter */}
@@ -43,34 +46,18 @@ export default function Posts() {
 
       {/* Post List - 정적 PostCard 예시 3개 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* <PostCard />
         <PostCard />
-        <PostCard />
-        <PostCard />
+        <PostCard /> */}
       </div>
 
       {/* Pagination */}
-      <div className="flex justify-center mt-12 gap-2">
-        <button
-          className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 disabled:opacity-50"
-          disabled
-        >
-          Previous
-        </button>
-        {/* 
-        currentPage === page
-          ? "bg-blue-500 text-white"
-          : "bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300"
-        */}
-        <button className="w-10 h-10 rounded-lg bg-blue-500 text-white">
-          1
-        </button>
-        <button className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300">
-          2
-        </button>
-        <button className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 disabled:opacity-50">
-          Next
-        </button>
-      </div>
+      <Pagination
+        pageRange={5}
+        currentPage={page}
+        maxPage={20}
+        onPageChange={(page: number) => setPage(page)}
+      />
 
       {/* Ad Banner */}
       <div className="mt-12">
