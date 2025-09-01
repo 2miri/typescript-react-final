@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, Eye } from "lucide-react";
 import { Link } from "react-router";
 
 export default function PostCard({
@@ -9,6 +9,7 @@ export default function PostCard({
   thumbnail,
   author,
   createdAt,
+  viewCount,
 }: Post) {
   return (
     <div className="bg-slate-800 rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl">
@@ -41,6 +42,10 @@ export default function PostCard({
             src={author.profileImage}
           />
           <span className="text-gray-300 text-sm mr-3">{author.nickname}</span>
+          <div className="flex items-center text-xs text-gray-400 mr-4">
+            <Eye className="h-3 w-3 mr-1" aria-hidden="true" />
+            <span>{viewCount}</span>
+          </div>
           <div className="flex items-center text-xs text-gray-400">
             <CalendarDays className="h-3 w-3 mr-1" aria-hidden="true" />
             <span>{format(new Date(createdAt), "yyyy-MM-dd HH:mm")}</span>
