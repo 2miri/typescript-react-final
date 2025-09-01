@@ -55,6 +55,7 @@ export default function PostRead() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
+      <title>{`${post.title}`}</title>
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-start mb-6">
           <span className="inline-block bg-blue-500 text-white text-sm font-semibold px-3 py-1 rounded-md">

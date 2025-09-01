@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search, PenSquare, LogIn } from "lucide-react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import AuthProfile from "./AuthProfile";
@@ -14,6 +14,13 @@ export default function Header() {
   const handleSearch = async () => {
     navigate(`/posts?search=${keyword}`);
   };
+  useEffect(() => {
+    if (!search) {
+      setKeyword("");
+    } else {
+      setKeyword(search);
+    }
+  }, [search]);
   return (
     <header className="bg-slate-900 text-white py-5 px-4 md:px-8">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -21,7 +28,7 @@ export default function Header() {
           <div className="h-8 w-8 bg-blue-500 rounded-full flex items-center justify-center mr-2">
             <span className="text-white font-bold">S</span>
           </div>
-          <span className="text-xl font-bold">SULOG</span>
+          <span className="text-xl font-bold">STUDY REACT</span>
         </Link>
 
         <div className="flex items-center space-x-4">

@@ -9,6 +9,7 @@ export default function Login() {
   };
   return (
     <div className="min-h-[calc(100vh-64px)] flex items-center justify-center px-4">
+      <title>Login</title>
       <div className="w-full max-w-md">
         <div className="bg-slate-800 rounded-lg shadow-xl p-8">
           {/* 헤더 */}
