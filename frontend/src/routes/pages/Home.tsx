@@ -4,10 +4,15 @@ import FeaturedPost from "../../components/post/FeaturedPost";
 import PostGrid from "../../components/post/PostGrid";
 
 export default function Home() {
-  const { randomPost, popularPosts, latestPosts } = useLoaderData();
+  const {
+    randomPost,
+    popularPosts,
+    latestPosts,
+  }: { randomPost: Post; popularPosts: Post[]; latestPosts: Post[] } =
+    useLoaderData();
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
-      {randomPost && <FeaturedPost />}
+      {randomPost && <FeaturedPost post={randomPost} />}
 
       <div className="mt-8">
         <AdBanner />
