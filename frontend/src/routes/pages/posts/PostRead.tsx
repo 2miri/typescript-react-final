@@ -7,6 +7,7 @@ import CommentComponent from "../../../components/comment/CommentComponent";
 import { useLoaderData, useNavigate } from "react-router";
 import { format } from "date-fns";
 import { useAuthStore } from "../../../store/authStore";
+import { axiosInstance } from "../../api/axios";
 
 export default function PostRead() {
   const navigate = useNavigate();
@@ -14,6 +15,15 @@ export default function PostRead() {
     useLoaderData();
   const user = useAuthStore((state) => state.user);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const deletePost = async () => {
+    try {
+      await axiosInstance.delete(`/posts/${post._id}`);
+      navigate("/");
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "unknown error");
+    }
+  };
+
   // 게시글이 없으면
   if (!post) {
     return (
@@ -109,7 +119,7 @@ export default function PostRead() {
                   Cancel
                 </button>
                 <button
-                  onClick={() => setShowDeleteConfirm(false)}
+                  onClick={deletePost}
                   className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
                 >
                   Delete
