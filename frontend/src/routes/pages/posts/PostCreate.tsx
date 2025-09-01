@@ -1,6 +1,8 @@
-import { ImagePlus } from "lucide-react";
+import axios from "axios";
+import { ImagePlus, Loader2 } from "lucide-react";
 import { useState, useTransition } from "react";
 import { useNavigate } from "react-router";
+import { axiosInstance } from "../../api/axios";
 
 const categories = [
   "",
@@ -99,6 +101,33 @@ export default function PostCreate() {
         if (Object.keys(newErors).length > 0) {
           setErrorState(newErors);
           return;
+        }
+
+        let thumbnail = "";
+        if (previewImage) {
+          const formData = new FormData();
+          formData.append("file", previewImage);
+          formData.append("upload_preset", "react_blog");
+
+          const {
+            data: { url },
+          } = await axios.post(
+            "https://api-ap.cloudinary.com/v1_1/desarsxkq/image/upload",
+            formData
+          );
+          thumbnail = url;
+        }
+
+        const { status } = await axiosInstance.post("/posts", {
+          title: formState.title,
+          category: formState.category,
+          thumbnail: thumbnail,
+          content: formState.content,
+        });
+
+        if (status === 201) {
+          alert("Post added!");
+          navigate("/");
         }
       } catch (e) {
         console.error(e instanceof Error ? e.message : "unknwon error");
@@ -227,9 +256,14 @@ export default function PostCreate() {
         <div className="flex gap-4">
           <button
             type="submit"
-            className="px-6 py-2.5 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 transition-colors"
+            className="px-6 py-2.5 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 transition-colors disabled:bg-gray-400"
+            disabled={isPending}
           >
-            Publish Post
+            {isPending ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              "Publish Post"
+            )}
           </button>
           <button
             type="button"
