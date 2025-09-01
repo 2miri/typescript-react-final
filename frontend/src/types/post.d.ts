@@ -22,3 +22,10 @@ interface Post {
   viewCount: number;
   createdAt: string;
 }
+
+interface Pagination {
+  totalCount: number;
+  currentPage: number;
+  perPage: number;
+  maxPage: number;
+}

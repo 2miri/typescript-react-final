@@ -18,6 +18,7 @@ import FullLoading from "../components/common/FullLoading";
 import ErrorState from "../components/common/ErrorState";
 import {
   fetchOverview,
+  fetchPosts,
   fetchPostsDetail,
   petchPostModify,
 } from "./loader/post.loader";
@@ -36,6 +37,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/posts",
+        loader: fetchPosts,
         Component: Posts,
       },
       {

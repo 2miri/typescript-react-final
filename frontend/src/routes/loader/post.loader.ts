@@ -34,3 +34,24 @@ export const petchPostModify = async ({ params }: LoaderFunctionArgs) => {
     console.error(e);
   }
 };
+
+export const fetchPosts = async ({ request }: LoaderFunctionArgs) => {
+  try {
+    let query = "";
+    const url = new URL(request.url);
+    const sort = url.searchParams.get("sort") ?? "newest"; // views
+    const category = url.searchParams.get("category") ?? "";
+    const page = url.searchParams.get("page") ?? "1";
+    const search = url.searchParams.get("search") ?? "";
+
+    if (sort !== "") query += `sort=${sort}`;
+    if (category !== "") query += `&category=${category}`;
+    if (page !== "") query += `&page=${page}`;
+    if (search !== "") query += `&search=${search}`;
+
+    const { data } = await axiosInstance.get(`/posts?${query}`);
+    return data;
+  } catch (e) {
+    console.error(e);
+  }
+};
