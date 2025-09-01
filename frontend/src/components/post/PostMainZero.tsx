@@ -1,10 +1,10 @@
 import { FileX, RefreshCw } from "lucide-react";
 
-export default function PostMainZero() {
+export default function PostMainZero({ title }: { title: string }) {
   return (
     <section className="py-10">
       <div className="flex items-center justify-between mb-8">
-        <h2 className="text-2xl font-bold text-white">Latest Post</h2>
+        <h2 className="text-2xl font-bold text-white">{title}</h2>
       </div>
       <div className="flex flex-col items-center justify-center py-16 px-4 bg-slate-800 rounded-lg">
         <div className="bg-slate-700 rounded-full p-6 mb-6">
