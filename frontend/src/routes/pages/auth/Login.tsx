@@ -15,7 +15,7 @@ export default function Login() {
           {/* 헤더 */}
           <div className="text-center mb-8">
             <h1 className="text-2xl font-bold text-white mb-2">
-              Welcome to SULOG
+              Welcome to STUDY REACT
             </h1>
             <p className="text-gray-400">Sign in with your account</p>
           </div>
