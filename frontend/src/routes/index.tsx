@@ -16,7 +16,7 @@ import {
 } from "./loader/auth.loader";
 import FullLoading from "../components/common/FullLoading";
 import ErrorState from "../components/common/ErrorState";
-import { fetchOverview } from "./loader/post.loader";
+import { fetchOverview, fetchPostsDetail } from "./loader/post.loader";
 
 const router = createBrowserRouter([
   {
@@ -46,6 +46,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/post/:id",
+        loader: fetchPostsDetail,
         Component: PostRead,
       },
       {

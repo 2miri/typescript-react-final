@@ -3,11 +3,11 @@ import PostCard from "./PostCard";
 import PostMainZero from "./PostMainZero";
 
 export default function PostGrid({
-  title,
-  posts,
+  title = "Posts",
+  posts = [],
 }: {
-  title: string;
-  posts: Post[];
+  title?: string;
+  posts?: Post[];
 }) {
   if (posts.length === 0) return <PostMainZero title={title} />;
   return (

@@ -4,18 +4,23 @@ import AdBanner from "../../../components/common/AdBanner";
 import PostGrid from "../../../components/post/PostGrid";
 import CommentForm from "../../../components/comment/CommentForm";
 import CommentComponent from "../../../components/comment/CommentComponent";
+import { useLoaderData } from "react-router";
 
 export default function PostRead() {
+  const { post, relatedPosts }: { post: Post; relatedPosts: Post[] } =
+    useLoaderData();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   // 게시글이 없으면
-  // return (
-  //   <div className="max-w-7xl mx-auto px-4 md:px-8 py-20 text-center">
-  //     <h1 className="text-3xl font-bold text-white mb-4">Post Not Found</h1>
-  //     <p className="text-gray-400">
-  //       The post you're looking for doesn't exist.
-  //     </p>
-  //   </div>
-  // );
+  if (!post) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-20 text-center flex flex-col justify-center min-h-[calc(100vh-76px)]">
+        <h1 className="text-3xl font-bold text-white mb-4">Post Not Found</h1>
+        <p className="text-gray-400">
+          The post you're looking for doesn't exist.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
@@ -172,7 +177,7 @@ export default function PostRead() {
         </div>
 
         <div className="mb-12">
-          <PostGrid />
+          <PostGrid title="Related Posts" posts={relatedPosts} />
         </div>
       </div>
     </div>
