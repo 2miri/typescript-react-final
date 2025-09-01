@@ -5,7 +5,7 @@ export default function Login() {
   const navigate = useNavigate(); // 같은 도메인일시 라우터로 이동하는게 좋음
   const handleKakaoLogin = () => {
     // 카카오는 도메인이 다르니까 이렇게 이동
-    window.location.href = "http://localhost:4000/auth/kakao";
+    window.location.href = import.meta.env.VITE_API_URL + "/auth/kakao";
   };
   return (
     <div className="min-h-[calc(100vh-64px)] flex items-center justify-center px-4">

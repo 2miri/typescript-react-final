@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const axiosInstance = axios.create({
-  baseURL: "http://localhost:4000",
+  baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true, // 요청에 쿠키나 인증 정보 포함시킴 (CORS 인증 유지 시 필요)
 });
 
