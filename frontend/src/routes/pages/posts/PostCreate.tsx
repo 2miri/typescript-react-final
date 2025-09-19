@@ -153,15 +153,13 @@ export default function PostCreate() {
   };
 
   useEffect(() => {
-    if (post) {
-      setFormState({
-        title: post.title,
-        category: post.category,
-        thumbnail: post.thumbnail,
-        content: post.content,
-      });
-      setPreviewImage(post.thumbnail);
-    }
+    setFormState({
+      title: post?.title || "",
+      category: post?.category || "",
+      thumbnail: post?.thumbnail || "",
+      content: post?.content || "",
+    });
+    setPreviewImage(post?.thumbnail || "");
   }, [post]);
 
   return (
